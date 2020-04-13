@@ -2,8 +2,10 @@
 import logging
 
 from aiogram import Bot, Dispatcher, executor, types
-from help_functions import get_data_from_yaml, admin_check
+from help_functions import get_data_from_yaml, admin_check, get_jsons_privat, parse_privat_jsons
 import asyncio
+
+from typing import List, Dict, Union, Any
 
 
 # Create loop
@@ -21,6 +23,12 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop)
+# dp = Dispatcher(bot)
+
+# Privatbank API (JSON format)
+url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
+url_privatbank_busines = 'https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11'
+url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
 
 @dp.message_handler(commands=['start'])
@@ -37,6 +45,17 @@ async def send_welcome(message: types.Message):
     if username:
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
+    await message.answer("/start - initialization message\n"
+                         "/privat - exchange rates")
+
+
+@dp.message_handler(commands=['privat'])
+@admin_check(ADMINS_IDS)
+async def send_privatbank(message: types.Message):
+    await message.answer("START PRIVAT")
+    result = await get_jsons_privat(url_privatbank_list)
+    result = parse_privat_jsons(result)
+    await message.answer("END PRIVAT")
 
 
 @dp.message_handler()
