@@ -2,7 +2,12 @@
 import logging
 
 from aiogram import Bot, Dispatcher, executor, types
-from help_functions import get_data_from_yaml, admin_check, get_jsons_privat, parse_privat_jsons
+from help_functions import \
+    get_data_from_yaml, \
+    admin_check, \
+    get_jsons_privat, \
+    parse_privat_jsons, \
+    create_currency_message
 import asyncio
 
 from typing import List, Dict, Union, Any
@@ -33,7 +38,7 @@ url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
 @dp.message_handler(commands=['start'])
 @admin_check(ADMINS_IDS)
-async def send_welcome(message: types.Message):
+async def send_welcome(message: types.Message, **kwargs):
     first_name = message._values['from'].first_name
     last_name = message._values['from'].last_name
     username = message._values['from'].username
@@ -51,11 +56,11 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(commands=['privat'])
 @admin_check(ADMINS_IDS)
-async def send_privatbank(message: types.Message):
-    await message.answer("START PRIVAT")
+async def send_privatbank(message: types.Message, **kwargs):
     result = await get_jsons_privat(url_privatbank_list)
-    result = parse_privat_jsons(result)
-    await message.answer("END PRIVAT")
+    result = await parse_privat_jsons(result)
+    result_message = await create_currency_message(result)
+    await message.answer(result_message)
 
 
 @dp.message_handler()
