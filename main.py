@@ -1,16 +1,14 @@
 #!/home/stastodd/projects/venv_38_telegram-bot/bin/python3.8
 import logging
-
+import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from help_functions import \
     get_data_from_yaml, \
-    admin_check, \
+    admin_check
+from privat import \
     get_jsons_privat, \
     parse_privat_jsons, \
     create_currency_message
-import asyncio
-
-from typing import List, Dict, Union, Any
 
 
 # Create loop
