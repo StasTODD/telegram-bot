@@ -10,6 +10,8 @@ from privat import \
     parse_privat_jsons, \
     create_currency_message
 
+from typing import List, Dict, Union, Any
+
 
 # Create loop
 loop = asyncio.get_event_loop()
