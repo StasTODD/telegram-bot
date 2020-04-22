@@ -1,9 +1,14 @@
 #!/home/stastodd/projects/venv_38_telegram-bot/bin/python3.8
 import logging
-
-from aiogram import Bot, Dispatcher, executor, types
-from help_functions import get_data_from_yaml, admin_check
 import asyncio
+from aiogram import Bot, Dispatcher, executor, types
+from help_functions import \
+    get_data_from_yaml, \
+    admin_check
+from privat import \
+    get_jsons_privat, \
+    parse_privat_jsons, \
+    create_currency_message
 
 
 # Create loop
@@ -21,11 +26,17 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop)
+# dp = Dispatcher(bot)
+
+# Privatbank API (JSON format)
+url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
+url_privatbank_busines = 'https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11'
+url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
 
 @dp.message_handler(commands=['start'])
 @admin_check(ADMINS_IDS)
-async def send_welcome(message: types.Message):
+async def send_welcome(message: types.Message, **kwargs):
     first_name = message._values['from'].first_name
     last_name = message._values['from'].last_name
     username = message._values['from'].username
@@ -37,6 +48,17 @@ async def send_welcome(message: types.Message):
     if username:
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
+    await message.answer("/start - initialization message\n"
+                         "/privat - exchange rates")
+
+
+@dp.message_handler(commands=['privat'])
+@admin_check(ADMINS_IDS)
+async def send_privatbank(message: types.Message, **kwargs):
+    result = await get_jsons_privat(url_privatbank_list)
+    result = await parse_privat_jsons(result)
+    result_message = await create_currency_message(result)
+    await message.answer(result_message)
 
 
 @dp.message_handler()

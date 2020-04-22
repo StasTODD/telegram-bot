@@ -1,4 +1,6 @@
 import yaml
+import aiohttp
+from typing import List, Dict, Union, Any
 
 
 def get_data_from_yaml(filename: str) -> dict:
@@ -12,12 +14,20 @@ def get_data_from_yaml(filename: str) -> dict:
 
 
 def admin_check(ADMINS_IDS):
+    """
+    Decorator for access admins ID only
+    """
     def wrap(f):
-        async def wrapped_f(*args):
+        async def wrapped_f(*args, **kwargs):
             if args[0]['chat']['id'] in ADMINS_IDS:
-                value = await f(*args)
+                value = await f(*args, **kwargs)
                 return value
-
         return wrapped_f
-
     return wrap
+
+
+async def get_json_from_web(url: str) -> Dict[str, Union[str, object]]:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            result = {'status': resp.status, 'result': await resp.text()}
+            return result
