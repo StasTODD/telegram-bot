@@ -4,7 +4,8 @@ import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from help_functions import \
     get_data_from_yaml, \
-    admin_check
+    admin_check, \
+    action_logging
 from privat import \
     get_jsons_privat, \
     parse_privat_jsons, \
@@ -35,6 +36,7 @@ url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
 
 @dp.message_handler(commands=['start'])
+@action_logging()
 @admin_check(ADMINS_IDS)
 async def send_welcome(message: types.Message, **kwargs):
     first_name = message._values['from'].first_name
@@ -53,6 +55,7 @@ async def send_welcome(message: types.Message, **kwargs):
 
 
 @dp.message_handler(commands=['privat'])
+@action_logging()
 @admin_check(ADMINS_IDS)
 async def send_privatbank(message: types.Message, **kwargs):
     result = await get_jsons_privat(url_privatbank_list)
@@ -62,7 +65,8 @@ async def send_privatbank(message: types.Message, **kwargs):
 
 
 @dp.message_handler()
-async def send_help(message: types.Message):
+@action_logging()
+async def send_help(message: types.Message, **kwargs):
     await message.reply("/start - initialization message")
 
 
