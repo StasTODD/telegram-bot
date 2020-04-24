@@ -1,9 +1,9 @@
 import ast
 import statistics
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Union
 
 
-async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: List[str]) -> Dict[str, str]:
+async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: List[str]) -> Union[Dict[str, str], bool]:
     """
     :param cripto_pair: ['BTC_USD', 'ETH_USD', 'XRP_USD' ... ]
     :param raw_data: {'status': 200,
@@ -45,13 +45,17 @@ async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: Li
     return result
 
 
-async def create_crypto_currency_message(currency: Dict[str, str]) -> str:
+async def create_crypto_currency_message(currency: Union[Dict[str, str], bool]) -> str:
     """
     Create string with crypto currency data
 
     :param currency: {'BTC_USD': '7580.34561', 'ETH_USD': '189.682', ... }
     :return: 'str'
     """
-    # TODO: Create message line
-    currency_str = f'{currency}'
+    if currency:
+        currency_str = "Exmo pairs: \n"
+        for pair, cost in currency.items():
+            currency_str += f"{pair}: {cost}\n"
+    else:
+        currency_str = "all pairs of currency haven't result"
     return currency_str
