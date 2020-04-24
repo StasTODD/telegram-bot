@@ -60,7 +60,8 @@ async def send_welcome(message: types.Message, **kwargs):
     await message.answer(hello_str + "in StasTODD Telegram bot")
     await message.answer("/start - initialization message\n"
                          "/privat - exchange rates\n"
-                         "/exmo - crypto exchange rates")
+                         "/exmo - crypto exchange rates\n"
+                         "/test_image - test work with images")
 
 
 @dp.message_handler(commands=['privat'])
@@ -79,6 +80,15 @@ async def send_exmo(message: types.Message, **kwargs):
     result = await parse_exmo_jsons(result, cripto_pair)
     result_message = await create_crypto_currency_message(result)
     await message.answer(result_message)
+
+
+@dp.message_handler(commands=['test_image'])
+@admin_check(ADMINS_IDS)
+async def send_image(message: types.Message, **kwargs):
+    # TODO: move work task to another file
+    photo = '/home/stastodd/projects/telegram-bot/images/background_template/640x640.png'
+    with open(photo, "rb") as f:
+        await message.reply_photo(f.read())
 
 
 @dp.message_handler()
