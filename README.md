@@ -13,12 +13,11 @@ It's private little project for help me in my life. It's not serious, but i try 
 
 ✔️ Work with Privatbank API for check USD/UAH course.
 
+✔️ Work with Exmo exchange API for check BTC/ETH course.
 ### In the future, will be support this functions:
 ❔ Work with Raspberry PI.
 
 ❔ Listen commands for work with digital camera.
-
-❔ Work with Exmo exchange API for check BTC/ETH course.
 
 ❔ Work with weather site API for weather check.
 

@@ -4,12 +4,16 @@ import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from help_functions import \
     get_data_from_yaml, \
-    admin_check
+    admin_check, \
+    get_json_from_web
 from privat import \
     get_jsons_privat, \
     parse_privat_jsons, \
     create_currency_message
 
+from exmo import \
+    parse_exmo_jsons, \
+    create_crypto_currency_message
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -33,6 +37,12 @@ url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange
 url_privatbank_busines = 'https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11'
 url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
+# EXMO exchange API (JSON format)
+url_exmo = 'https://api.exmo.com/v1.1/ticker'
+cripto_pair = ['BTC_USD', 'ETH_USD', 'XRP_USD', 'EOS_USD',
+               'ETC_USD', 'LTC_USD', 'NEO_USD', 'SMART_USD',
+               'XEM_USD', 'XLM_USD', 'XMR_USD']
+
 
 @dp.message_handler(commands=['start'])
 @admin_check(ADMINS_IDS)
@@ -49,7 +59,8 @@ async def send_welcome(message: types.Message, **kwargs):
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
     await message.answer("/start - initialization message\n"
-                         "/privat - exchange rates")
+                         "/privat - exchange rates\n"
+                         "/exmo - crypto exchange rates")
 
 
 @dp.message_handler(commands=['privat'])
@@ -58,6 +69,15 @@ async def send_privatbank(message: types.Message, **kwargs):
     result = await get_jsons_privat(url_privatbank_list)
     result = await parse_privat_jsons(result)
     result_message = await create_currency_message(result)
+    await message.answer(result_message)
+
+
+@dp.message_handler(commands=['exmo'])
+@admin_check(ADMINS_IDS)
+async def send_exmo(message: types.Message, **kwargs):
+    result = await get_json_from_web(url_exmo)
+    result = await parse_exmo_jsons(result, cripto_pair)
+    result_message = await create_crypto_currency_message(result)
     await message.answer(result_message)
 
 
