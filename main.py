@@ -2,14 +2,17 @@
 import logging
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
+
 from help_functions import \
     get_data_from_yaml, \
     admin_check, \
     get_json_from_web
+
 from privat import \
     get_jsons_privat, \
     parse_privat_jsons, \
-    create_currency_message
+    create_currency_message, \
+    create_privat_image
 
 from exmo import \
     parse_exmo_jsons, \
@@ -31,6 +34,9 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop)
 # dp = Dispatcher(bot)
+
+# Display output information in image (image - True, text - False):
+image_output = True
 
 # Privatbank API (JSON format)
 url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
@@ -67,10 +73,20 @@ async def send_welcome(message: types.Message, **kwargs):
 @dp.message_handler(commands=['privat'])
 @admin_check(ADMINS_IDS)
 async def send_privatbank(message: types.Message, **kwargs):
-    result = await get_jsons_privat(url_privatbank_list)
-    result = await parse_privat_jsons(result)
-    result_message = await create_currency_message(result)
-    await message.answer(result_message)
+    request_result = await get_jsons_privat(url_privatbank_list)
+    data_list = await parse_privat_jsons(request_result)
+
+    if image_output:
+        result_message = await create_currency_message(data_list, text_for_image=True)
+        image_path = await create_privat_image(result_message)
+        if image_path:
+            with open(image_path, "rb") as image:
+                await message.reply_photo(image.read())
+        else:
+            await message.answer("Image not created. Something wrong...")
+    else:
+        result_message = await create_currency_message(data_list, text_for_image=False)
+        await message.answer(result_message)
 
 
 @dp.message_handler(commands=['exmo'])
@@ -80,15 +96,6 @@ async def send_exmo(message: types.Message, **kwargs):
     result = await parse_exmo_jsons(result, cripto_pair)
     result_message = await create_crypto_currency_message(result)
     await message.answer(result_message)
-
-
-@dp.message_handler(commands=['test_image'])
-@admin_check(ADMINS_IDS)
-async def send_image(message: types.Message, **kwargs):
-    # TODO: move work task to another file
-    photo = '/home/stastodd/projects/telegram-bot/images/background_template/640x640.png'
-    with open(photo, "rb") as f:
-        await message.reply_photo(f.read())
 
 
 @dp.message_handler()
