@@ -65,8 +65,8 @@ async def send_welcome(message: types.Message, **kwargs):
     if username:
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
-    await message.answer("/start - initialization message\n"
-                         "/privat - exchange rates\n"
+    await message.answer("/start - initialization message\n\n"
+                         "/privat - exchange rates\n\n"
                          "/exmo - crypto exchange rates")
 
 
