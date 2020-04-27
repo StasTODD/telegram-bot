@@ -3,8 +3,6 @@
 It's private little project for help me in my life. It's not serious, but i try practice python language and async methods. 
 
 ### It can do:
-✔️ Get started and don't fall 😅
-
 ✔️ Get info about API token and admins id from yaml-file. 
 
 ✔️ Send message to admin if tbot was started.
@@ -13,7 +11,9 @@ It's private little project for help me in my life. It's not serious, but i try 
 
 ✔️ Work with Privatbank API for check USD/UAH course.
 
-✔️ Work with Exmo exchange API for check BTC/ETH course.
+✔️ Work with Exmo cryptoexchange API for check BTC/USD course.
+
+✔️ Privatbank and Exmo have reply-format in the image.
 ### In the future, will be support this functions:
 ❔ Work with Raspberry PI.
 
@@ -22,3 +22,9 @@ It's private little project for help me in my life. It's not serious, but i try 
 ❔ Work with weather site API for weather check.
 
 ❔ Work with dashboard creater for summary all info.
+
+❔ Work with SQLite DB for save data.
+
+❔ Migrate hello-message from strings to buttons.
+
+❔ Migrate static to dynamic image in reply-message.
