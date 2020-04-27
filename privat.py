@@ -29,7 +29,7 @@ async def parse_privat_jsons(raw_data: List[Dict[str, Union[int, str]]]) -> List
     return raw_data
 
 
-async def create_currency_message(currency: List[Dict[str, str]], text_for_image=False) -> str:
+async def create_currency_message(currency: List[Dict[str, str]], text_for_image: bool = False) -> str:
     """
     Create string with currency data
 
@@ -70,15 +70,21 @@ async def create_currency_message(currency: List[Dict[str, str]], text_for_image
 
 
 async def create_privat_image(displayed_text: str) -> str:
+    """
+    Create image with text and return path to image
+
+    :param displayed_text: str
+    :return: "images/out/usd.png"
+    """
     image_template_path = "images/background_template/usd.png"
     image_template = Image.open(image_template_path)
     draw = ImageDraw.Draw(image_template)
 
-    font_size = 120
+    font_size = 60
     font = ImageFont.truetype('images/fonts/Spartan/static/Spartan-SemiBold.ttf', size=font_size)
 
     # Start position on image:
-    (x, y) = (270, 200)
+    (x, y) = (190, 100)
 
     text_color = "rgb(0, 0, 0)"
 
