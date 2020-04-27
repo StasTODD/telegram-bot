@@ -16,7 +16,8 @@ from privat import \
 
 from exmo import \
     parse_exmo_jsons, \
-    create_crypto_currency_message
+    create_cryptocurrency_message, \
+    create_cryptocurrency_image
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -66,8 +67,7 @@ async def send_welcome(message: types.Message, **kwargs):
     await message.answer(hello_str + "in StasTODD Telegram bot")
     await message.answer("/start - initialization message\n"
                          "/privat - exchange rates\n"
-                         "/exmo - crypto exchange rates\n"
-                         "/test_image - test work with images")
+                         "/exmo - crypto exchange rates")
 
 
 @dp.message_handler(commands=['privat'])
@@ -92,10 +92,20 @@ async def send_privatbank(message: types.Message, **kwargs):
 @dp.message_handler(commands=['exmo'])
 @admin_check(ADMINS_IDS)
 async def send_exmo(message: types.Message, **kwargs):
-    result = await get_json_from_web(url_exmo)
-    result = await parse_exmo_jsons(result, cripto_pair)
-    result_message = await create_crypto_currency_message(result)
-    await message.answer(result_message)
+    request_result = await get_json_from_web(url_exmo)
+    request_result = await parse_exmo_jsons(request_result, cripto_pair)
+
+    if image_output:
+        result_message = await create_cryptocurrency_message(request_result, text_for_image=True)
+        image_path = await create_cryptocurrency_image(result_message)
+        if image_path:
+            with open(image_path, "rb") as image:
+                await message.reply_photo(image.read())
+        else:
+            await message.answer("Image not created. Something wrong...")
+    else:
+        result_message = await create_cryptocurrency_message(request_result, text_for_image=False)
+        await message.answer(result_message)
 
 
 @dp.message_handler()
