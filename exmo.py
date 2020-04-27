@@ -1,6 +1,7 @@
 import ast
 import statistics
 from typing import List, Dict, Union
+from PIL import Image, ImageDraw, ImageFont
 
 
 async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: List[str]) -> Union[Dict[str, str], bool]:
@@ -45,17 +46,50 @@ async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: Li
     return result
 
 
-async def create_crypto_currency_message(currency: Union[Dict[str, str], bool]) -> str:
+async def create_cryptocurrency_message(currency: Union[Dict[str, str], bool], text_for_image: bool = False) -> str:
     """
     Create string with crypto currency data
 
+    :param text_for_image: Display output information in image (image - True, text - False)
     :param currency: {'BTC_USD': '7580.34561', 'ETH_USD': '189.682', ... }
     :return: 'str'
     """
-    if currency:
+    if not currency and not isinstance(currency, dict):
+        return "all pairs of currency haven't result"
+
+    if not text_for_image:
         currency_str = "Exmo pairs: \n"
         for pair, cost in currency.items():
-            currency_str += f"{pair}: {cost}\n"
+            currency_str += f"{pair}:   {cost}\n"
+        return currency_str
     else:
-        currency_str = "all pairs of currency haven't result"
-    return currency_str
+        currency_str = "Exmo pairs: \n\n\n"
+        for pair, cost in currency.items():
+            currency_str += f"{pair}:   {cost}\n\n"
+        return currency_str
+
+
+async def create_cryptocurrency_image(displayed_text: str) -> str:
+    """
+    Create image with text and return path to image
+
+    :param displayed_text: str
+    :return: "images/out/crypto.png"
+    """
+    image_template_path = "images/background_template/crypto.png"
+    image_template = Image.open(image_template_path)
+    draw = ImageDraw.Draw(image_template)
+
+    font_size = 50
+    font = ImageFont.truetype('images/fonts/Spartan/static/Spartan-SemiBold.ttf', size=font_size)
+
+    # Start position on image:
+    (x, y) = (140, 90)
+
+    text_color = "rgb(255, 255, 255)"
+
+    draw.text((x, y), displayed_text, fill=text_color, font=font)
+    image_result_path = "images/out/crypto.png"
+    image_template.save(image_result_path)
+
+    return image_result_path

@@ -2,18 +2,22 @@
 import logging
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
+
 from help_functions import \
     get_data_from_yaml, \
     admin_check, \
     get_json_from_web
+
 from privat import \
     get_jsons_privat, \
     parse_privat_jsons, \
-    create_currency_message
+    create_currency_message, \
+    create_privat_image
 
 from exmo import \
     parse_exmo_jsons, \
-    create_crypto_currency_message
+    create_cryptocurrency_message, \
+    create_cryptocurrency_image
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -31,6 +35,9 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop)
 # dp = Dispatcher(bot)
+
+# Display output information in image (image - True, text - False):
+image_output = True
 
 # Privatbank API (JSON format)
 url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
@@ -58,27 +65,47 @@ async def send_welcome(message: types.Message, **kwargs):
     if username:
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
-    await message.answer("/start - initialization message\n"
-                         "/privat - exchange rates\n"
+    await message.answer("/start - initialization message\n\n"
+                         "/privat - exchange rates\n\n"
                          "/exmo - crypto exchange rates")
 
 
 @dp.message_handler(commands=['privat'])
 @admin_check(ADMINS_IDS)
 async def send_privatbank(message: types.Message, **kwargs):
-    result = await get_jsons_privat(url_privatbank_list)
-    result = await parse_privat_jsons(result)
-    result_message = await create_currency_message(result)
-    await message.answer(result_message)
+    request_result = await get_jsons_privat(url_privatbank_list)
+    data_list = await parse_privat_jsons(request_result)
+
+    if image_output:
+        result_message = await create_currency_message(data_list, text_for_image=True)
+        image_path = await create_privat_image(result_message)
+        if image_path:
+            with open(image_path, "rb") as image:
+                await message.reply_photo(image.read())
+        else:
+            await message.answer("Image not created. Something wrong...")
+    else:
+        result_message = await create_currency_message(data_list, text_for_image=False)
+        await message.answer(result_message)
 
 
 @dp.message_handler(commands=['exmo'])
 @admin_check(ADMINS_IDS)
 async def send_exmo(message: types.Message, **kwargs):
-    result = await get_json_from_web(url_exmo)
-    result = await parse_exmo_jsons(result, cripto_pair)
-    result_message = await create_crypto_currency_message(result)
-    await message.answer(result_message)
+    request_result = await get_json_from_web(url_exmo)
+    request_result = await parse_exmo_jsons(request_result, cripto_pair)
+
+    if image_output:
+        result_message = await create_cryptocurrency_message(request_result, text_for_image=True)
+        image_path = await create_cryptocurrency_image(result_message)
+        if image_path:
+            with open(image_path, "rb") as image:
+                await message.reply_photo(image.read())
+        else:
+            await message.answer("Image not created. Something wrong...")
+    else:
+        result_message = await create_cryptocurrency_message(request_result, text_for_image=False)
+        await message.answer(result_message)
 
 
 @dp.message_handler()
