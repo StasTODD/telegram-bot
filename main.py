@@ -52,7 +52,8 @@ cripto_pair = ['BTC_USD', 'ETH_USD', 'XRP_USD', 'EOS_USD',
 
 start_string = "/start - initialization message\n\n"\
                "/privat - exchange rates\n\n"\
-               "/exmo - crypto exchange rates"
+               "/exmo - crypto exchange rates\n\n"\
+               "/geoposition - take GPS location"\
 
 
 @dp.message_handler(commands=['start'])
@@ -108,6 +109,24 @@ async def send_exmo(message: types.Message, **kwargs):
     else:
         result_message = await create_cryptocurrency_message(request_result, text_for_image=False)
         await message.answer(result_message)
+
+
+@dp.message_handler(commands=['geoposition'])
+@admin_check(ADMINS_IDS)
+async def send_privatbank(message: types.Message, **kwargs):
+    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    button_geo = types.KeyboardButton(text="send geoposition", request_location=True)
+    keyboard.add(button_geo)
+    await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=keyboard)
+
+
+@dp.message_handler(content_types=["location"])
+@admin_check(ADMINS_IDS)
+async def location(message: types.Message, **kwargs):
+    if message.location is not None:
+        # TODO: remove prints and do something useful
+        print(message.location)
+        print(f"latitude: {message.location.latitude}; longitude: {message.location.longitude}")
 
 
 @dp.message_handler()
