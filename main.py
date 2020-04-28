@@ -50,6 +50,10 @@ cripto_pair = ['BTC_USD', 'ETH_USD', 'XRP_USD', 'EOS_USD',
                'ETC_USD', 'LTC_USD', 'NEO_USD', 'SMART_USD',
                'XEM_USD', 'XLM_USD', 'XMR_USD']
 
+start_string = "/start - initialization message\n\n"\
+               "/privat - exchange rates\n\n"\
+               "/exmo - crypto exchange rates"
+
 
 @dp.message_handler(commands=['start'])
 @admin_check(ADMINS_IDS)
@@ -65,9 +69,7 @@ async def send_welcome(message: types.Message, **kwargs):
     if username:
         hello_str += f'as @{username} '
     await message.answer(hello_str + "in StasTODD Telegram bot")
-    await message.answer("/start - initialization message\n\n"
-                         "/privat - exchange rates\n\n"
-                         "/exmo - crypto exchange rates")
+    await message.answer(start_string)
 
 
 @dp.message_handler(commands=['privat'])
@@ -110,7 +112,7 @@ async def send_exmo(message: types.Message, **kwargs):
 
 @dp.message_handler()
 async def send_help(message: types.Message):
-    await message.reply("/start - initialization message")
+    await message.reply(start_string)
 
 
 if __name__ == '__main__':
