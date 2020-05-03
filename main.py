@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from states import StatesWeather
 from buttons import gps_keyboard
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from help_functions import \
     get_data_from_yaml, \
@@ -22,6 +23,10 @@ from exmo import \
     create_cryptocurrency_message, \
     create_cryptocurrency_image
 
+from weather import \
+    create_weather_message, \
+    get_weather_data
+
 # Create loop
 loop = asyncio.get_event_loop()
 
@@ -31,12 +36,15 @@ API_TOKEN = admin_data['api_token']
 # Create admins_id structure: [int, int]
 ADMINS_IDS = [list(adm_id.values())[0] for adm_id in [adm_row for adm_row in admin_data['admins_ids']]]
 
+# Create storage for save message state
+storage = MemoryStorage()
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot, loop=loop)
+dp = Dispatcher(bot, loop=loop, storage=storage)
 # dp = Dispatcher(bot)
 
 # Display output information in image (image - True, text - False):
@@ -115,40 +123,28 @@ async def send_exmo(message: types.Message, **kwargs):
         await message.answer(result_message)
 
 
-# @dp.message_handler(commands=['geoposition'])
-# @admin_check(ADMINS_IDS)
-# async def send_location(message: types.Message, **kwargs):
-#     await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=gps_keyboard)
+@dp.message_handler(commands=['geoposition'])
+@admin_check(ADMINS_IDS)
+async def send_location(message: types.Message, **kwargs):
+    await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=gps_keyboard)
 
 
 @dp.message_handler(commands=['weather'], state=None)
 @admin_check(ADMINS_IDS)
 async def query_weather(message: types.Message, **kwargs):
     await StatesWeather.query.set()
-    await bot.send_message(message.chat.id, "Push the button and send gps position", reply_markup=gps_keyboard)
-    # await state.set_state(self.state)
+    await bot.send_message(message.chat.id, "Push the button and send GPS position", reply_markup=gps_keyboard)
 
 
-# @dp.message_handler(content_types=["location"], state=StatesWeather.query)
-# @admin_check(ADMINS_IDS)
-# async def location(message: types.Message, state: FSMContext, **kwargs):
-#     if message.location is not None:
-#         print('--weather--')
-#         # print(message.location)
-#         # print(f"latitude: {message.location.latitude}; longitude: {message.location.longitude}")
-#         data = await state.get_data()
-#         print(data)
-#         print('--/weather--')
-#         await state.finish()
-
-
-# @dp.message_handler(content_types=["location"])
-# @admin_check(ADMINS_IDS)
-# async def location(message: types.Message, **kwargs):
-#     if message.location is not None:
-#         # TODO: remove prints and do something useful
-#         print(message.location)
-#         print(f"latitude: {message.location.latitude}; longitude: {message.location.longitude}")
+@dp.message_handler(content_types=["location"], state=StatesWeather.query)
+@admin_check(ADMINS_IDS)
+async def location(message: types.Message, state: FSMContext, **kwargs):
+    if message.location is not None:
+        weather_api = admin_data['api_openweather']
+        weather_data = await get_weather_data(weather_api, message.location, lang='en')
+        weather_message = await create_weather_message(weather_data)
+        await state.finish()
+        await message.answer(weather_message)
 
 
 @dp.message_handler()
