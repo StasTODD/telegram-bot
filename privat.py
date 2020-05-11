@@ -29,7 +29,7 @@ async def parse_privat_jsons(raw_data: List[Dict[str, Union[int, str]]]) -> List
     return raw_data
 
 
-async def create_currency_message(currency: List[Dict[str, str]], text_for_image: bool = False) -> str:
+async def create_privat_currency_message(currency: List[Dict[str, str]], text_for_image: bool = False) -> str:
     """
     Create string with currency data
 

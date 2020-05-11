@@ -50,7 +50,7 @@ cripto_pair = ['BTC_USD', 'ETH_USD', 'XRP_USD', 'EOS_USD',
 start_string = "/start - initialization message\n\n"\
                "/privat - exchange rates\n\n"\
                "/exmo - crypto exchange rates\n\n"\
-               "/weather - data at this moment\n\n"\
+               "/weather - weather data\n\n"\
                "/geoposition - take GPS location"\
 
 
@@ -78,7 +78,7 @@ async def send_privatbank(message: types.Message, **kwargs):
     data_list = await parse_privat_jsons(request_result)
 
     if image_output:
-        result_message = await create_currency_message(data_list, text_for_image=True)
+        result_message = await create_privat_currency_message(data_list, text_for_image=True)
         image_path = await create_privat_image(result_message)
         if image_path:
             with open(image_path, "rb") as image:
@@ -86,7 +86,7 @@ async def send_privatbank(message: types.Message, **kwargs):
         else:
             await message.answer("Image not created. Something wrong...")
     else:
-        result_message = await create_currency_message(data_list, text_for_image=False)
+        result_message = await create_privat_currency_message(data_list, text_for_image=False)
         await message.answer(result_message)
 
 
@@ -109,15 +109,24 @@ async def send_exmo(message: types.Message, **kwargs):
         await message.answer(result_message)
 
 
-@dp.message_handler(commands=['geoposition'])
-@admin_check(ADMINS_IDS)
-async def send_location(message: types.Message, **kwargs):
-    await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=gps_keyboard)
-
-
 @dp.message_handler(commands=['weather'], state=None)
 @admin_check(ADMINS_IDS)
 async def query_weather(message: types.Message, **kwargs):
+    await StatesWeather.question_of_date.set()
+    await bot.send_message(message.chat.id, "Set weather date:\n"
+                                            "/now\n\n"
+                                            "/today\n\n"
+                                            "/tomorrow\n\n"
+                                            "/plus_2_days\n\n"
+                                            "/plus_3_days\n\n"
+                                            "/plus_4_days")
+
+
+@dp.message_handler(commands=["now", "today", "tomorrow", "plus_2_days", "plus_3_days", "plus_4_days"],
+                    state=StatesWeather.question_of_date)
+@admin_check(ADMINS_IDS)
+async def query_weather(message: types.Message, state: FSMContext, **kwargs):
+    await state.update_data({"weather_date": message.text})
     await StatesWeather.query.set()
     await bot.send_message(message.chat.id, "Push the button and send GPS position", reply_markup=gps_keyboard)
 
@@ -127,10 +136,22 @@ async def query_weather(message: types.Message, **kwargs):
 async def location(message: types.Message, state: FSMContext, **kwargs):
     if message.location is not None:
         weather_api = admin_data['api_openweather']
-        weather_data = await get_weather_data(weather_api, message.location, lang='en')
-        weather_message = await create_weather_message(weather_data)
+        weather_date = await state.get_data()
+        weather_date = weather_date.get('weather_date')
+        if weather_date in ["/today", "/tomorrow", "/plus_2_days", "/plus_3_days", "/plus_4_days"]:
+            weather_data = await get_weather_data(weather_api, message.location, state='forecast', lang='en')
+        else:
+            weather_data = await get_weather_data(weather_api, message.location, state='weather', lang='en')
+        weather_message = await create_weather_message(weather_data, weather_date)
         await state.finish()
         await message.answer(weather_message)
+
+
+# TODO: set message reply for geolocation:
+@dp.message_handler(commands=['geoposition'])
+@admin_check(ADMINS_IDS)
+async def send_location(message: types.Message, **kwargs):
+    await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=gps_keyboard)
 
 
 @dp.message_handler()
