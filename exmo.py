@@ -93,3 +93,7 @@ async def create_cryptocurrency_image(displayed_text: str) -> str:
     image_template.save(image_result_path)
 
     return image_result_path
+
+__all__ = ['parse_exmo_jsons',
+           'create_cryptocurrency_message',
+           'create_cryptocurrency_image']

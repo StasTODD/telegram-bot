@@ -93,3 +93,8 @@ async def create_privat_image(displayed_text: str) -> str:
     image_template.save(image_result_path)
 
     return image_result_path
+
+__all__ = ['get_jsons_privat',
+           'parse_privat_jsons',
+           'create_privat_currency_message',
+           'create_privat_image']

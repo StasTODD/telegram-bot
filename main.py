@@ -3,29 +3,15 @@ import logging
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from states import StatesWeather
 from buttons import gps_keyboard
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from help_functions import \
-    get_data_from_yaml, \
-    admin_check, \
-    get_json_from_web
-
-from privat import \
-    get_jsons_privat, \
-    parse_privat_jsons, \
-    create_currency_message, \
-    create_privat_image
-
-from exmo import \
-    parse_exmo_jsons, \
-    create_cryptocurrency_message, \
-    create_cryptocurrency_image
-
-from weather import \
-    create_weather_message, \
-    get_weather_data
+# Don't panic about '*', many imports is here but method __all__ on guard :)
+from help_functions import *
+from privat import *
+from exmo import *
+from weather import *
 
 # Create loop
 loop = asyncio.get_event_loop()

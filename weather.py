@@ -57,3 +57,8 @@ async def create_weather_message(weather_data):
                       f'sunrise: {sunrise}\n' \
                       f'sunset: {sunset}'
         return weather_now
+
+
+__all__ = ['get_weather_data',
+           'create_weather_message'
+           ]

@@ -31,3 +31,7 @@ async def get_json_from_web(url: str) -> Dict[str, Union[str, object]]:
         async with session.get(url) as resp:
             result = {'status': resp.status, 'result': await resp.text()}
             return result
+
+__all__ = ['get_data_from_yaml',
+           'admin_check',
+           'get_json_from_web']
