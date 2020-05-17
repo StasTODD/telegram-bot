@@ -131,7 +131,7 @@ async def query_weather(message: types.Message, state: FSMContext, **kwargs):
     await bot.send_message(message.chat.id, "Push the button and send GPS position", reply_markup=gps_keyboard)
 
 
-@dp.message_handler(content_types=["location"], state=StatesWeather.query)
+@dp.message_handler(content_types=["any"], state=StatesWeather.query)
 @admin_check(ADMINS_IDS)
 async def location(message: types.Message, state: FSMContext, **kwargs):
     if message.location is not None:
@@ -145,6 +145,9 @@ async def location(message: types.Message, state: FSMContext, **kwargs):
         weather_message = await create_weather_message(weather_data, weather_date)
         await state.finish()
         await message.answer(weather_message)
+    else:
+        await state.finish()
+        await send_help(message)
 
 
 # TODO: set message reply for geolocation:
