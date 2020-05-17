@@ -24,8 +24,8 @@ async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: Li
     :return {'BTC_USD': '7580.34561', 'ETH_USD': '189.682', ... }
     """
     # Check correct result request and prepare data using ast.literal_eval method:
-    if raw_data and raw_data.get('status') == 200:
-        raw_data = ast.literal_eval(raw_data['result'])
+    if raw_data and raw_data.get("status") == 200:
+        raw_data = ast.literal_eval(raw_data["result"])
     else:
         return False
 
@@ -36,8 +36,8 @@ async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: Li
     result = {}
     for pair, pair_data in data.items():
         try:
-            buy_price = float(pair_data['buy_price'])
-            sell_price = float(pair_data['sell_price'])
+            buy_price = float(pair_data["buy_price"])
+            sell_price = float(pair_data["sell_price"])
             average_price = statistics.mean([buy_price, sell_price])
             average_price = round(average_price, 5)
             result[pair] = str(average_price)
@@ -81,7 +81,7 @@ async def create_cryptocurrency_image(displayed_text: str) -> str:
     draw = ImageDraw.Draw(image_template)
 
     font_size = 50
-    font = ImageFont.truetype('images/fonts/Spartan/static/Spartan-SemiBold.ttf', size=font_size)
+    font = ImageFont.truetype("images/fonts/Spartan/static/Spartan-SemiBold.ttf", size=font_size)
 
     # Start position on image:
     (x, y) = (140, 90)
@@ -94,6 +94,6 @@ async def create_cryptocurrency_image(displayed_text: str) -> str:
 
     return image_result_path
 
-__all__ = ['parse_exmo_jsons',
-           'create_cryptocurrency_message',
-           'create_cryptocurrency_image']
+__all__ = ["parse_exmo_jsons",
+           "create_cryptocurrency_message",
+           "create_cryptocurrency_image"]

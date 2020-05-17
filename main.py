@@ -17,10 +17,10 @@ from weather import *
 loop = asyncio.get_event_loop()
 
 # Get api_token and admins_ids
-admin_data = get_data_from_yaml('data.yaml')
-API_TOKEN = admin_data['api_token']
+admin_data = get_data_from_yaml("data.yaml")
+API_TOKEN = admin_data["api_token"]
 # Create admins_id structure: [int, int]
-ADMINS_IDS = [list(adm_id.values())[0] for adm_id in [adm_row for adm_row in admin_data['admins_ids']]]
+ADMINS_IDS = [list(adm_id.values())[0] for adm_id in [adm_row for adm_row in admin_data["admins_ids"]]]
 
 # Create storage for save message state
 storage = MemoryStorage()
@@ -37,15 +37,15 @@ dp = Dispatcher(bot, loop=loop, storage=storage)
 image_output = True
 
 # Privatbank API (JSON format)
-url_privatbank_private = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
-url_privatbank_busines = 'https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11'
+url_privatbank_private = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
+url_privatbank_busines = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
 url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
 
 # EXMO exchange API (JSON format)
-url_exmo = 'https://api.exmo.com/v1.1/ticker'
-cripto_pair = ['BTC_USD', 'ETH_USD', 'XRP_USD', 'EOS_USD',
-               'ETC_USD', 'LTC_USD', 'NEO_USD', 'SMART_USD',
-               'XEM_USD', 'XLM_USD', 'XMR_USD']
+url_exmo = "https://api.exmo.com/v1.1/ticker"
+cripto_pair = ["BTC_USD", "ETH_USD", "XRP_USD", "EOS_USD",
+               "ETC_USD", "LTC_USD", "NEO_USD", "SMART_USD",
+               "XEM_USD", "XLM_USD", "XMR_USD"]
 
 start_string = "/start - initialization message\n\n"\
                "/privat - exchange rates\n\n"\
@@ -54,24 +54,24 @@ start_string = "/start - initialization message\n\n"\
                "/geoposition - take GPS location"\
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=["start"])
 @admin_check(ADMINS_IDS)
 async def send_welcome(message: types.Message, **kwargs):
-    first_name = message._values['from'].first_name
-    last_name = message._values['from'].last_name
-    username = message._values['from'].username
-    hello_str = 'Welcome '
+    first_name = message._values["from"].first_name
+    last_name = message._values["from"].last_name
+    username = message._values["from"].username
+    hello_str = "Welcome "
     if first_name:
-        hello_str += f'{first_name} '
+        hello_str += f"{first_name} "
     if last_name:
-        hello_str += f'{last_name} '
+        hello_str += f"{last_name} "
     if username:
-        hello_str += f'as @{username} '
+        hello_str += f"as @{username} "
     await message.answer(hello_str + "in StasTODD Telegram bot")
     await message.answer(start_string)
 
 
-@dp.message_handler(commands=['privat'])
+@dp.message_handler(commands=["privat"])
 @admin_check(ADMINS_IDS)
 async def send_privatbank(message: types.Message, **kwargs):
     request_result = await get_jsons_privat(url_privatbank_list)
@@ -90,7 +90,7 @@ async def send_privatbank(message: types.Message, **kwargs):
         await message.answer(result_message)
 
 
-@dp.message_handler(commands=['exmo'])
+@dp.message_handler(commands=["exmo"])
 @admin_check(ADMINS_IDS)
 async def send_exmo(message: types.Message, **kwargs):
     request_result = await get_json_from_web(url_exmo)
@@ -109,7 +109,7 @@ async def send_exmo(message: types.Message, **kwargs):
         await message.answer(result_message)
 
 
-@dp.message_handler(commands=['weather'], state=None)
+@dp.message_handler(commands=["weather"], state=None)
 @admin_check(ADMINS_IDS)
 async def query_weather(message: types.Message, **kwargs):
     await StatesWeather.question_of_date.set()
@@ -135,13 +135,13 @@ async def query_weather(message: types.Message, state: FSMContext, **kwargs):
 @admin_check(ADMINS_IDS)
 async def location(message: types.Message, state: FSMContext, **kwargs):
     if message.location is not None:
-        weather_api = admin_data['api_openweather']
+        weather_api = admin_data["api_openweather"]
         weather_date = await state.get_data()
-        weather_date = weather_date.get('weather_date')
+        weather_date = weather_date.get("weather_date")
         if weather_date in ["/today", "/tomorrow", "/plus_2_days", "/plus_3_days", "/plus_4_days"]:
-            weather_data = await get_weather_data(weather_api, message.location, state='forecast', lang='en')
+            weather_data = await get_weather_data(weather_api, message.location, state="forecast", lang="en")
         else:
-            weather_data = await get_weather_data(weather_api, message.location, state='weather', lang='en')
+            weather_data = await get_weather_data(weather_api, message.location, state="weather", lang="en")
         weather_message = await create_weather_message(weather_data, weather_date)
         await state.finish()
         await message.answer(weather_message)
@@ -175,6 +175,6 @@ async def send_help(message: types.Message):
     await message.reply(start_string)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from hendlers import send_to_admin
     executor.start_polling(dp, on_startup=send_to_admin)

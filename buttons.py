@@ -6,4 +6,4 @@ gps_button = types.KeyboardButton(text="send geoposition", request_location=True
 gps_keyboard.add(gps_button)
 
 
-__all__ = ['gps_keyboard']
+__all__ = ["gps_keyboard"]
