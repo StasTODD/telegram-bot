@@ -4,7 +4,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from states import StatesWeather
+from states import StatesWeather, Geoposition
 from buttons import gps_keyboard
 
 # Don't panic about '*', many imports is here but method __all__ on guard :)
@@ -150,11 +150,24 @@ async def location(message: types.Message, state: FSMContext, **kwargs):
         await send_help(message)
 
 
-# TODO: set message reply for geolocation:
-@dp.message_handler(commands=['geoposition'])
+@dp.message_handler(commands=["geoposition"], state=None)
 @admin_check(ADMINS_IDS)
-async def send_location(message: types.Message, **kwargs):
+async def send_location(message: types.Message, state: FSMContext, **kwargs):
+    await Geoposition.position.set()
     await bot.send_message(message.chat.id, "Push the button and send geoposition", reply_markup=gps_keyboard)
+
+
+@dp.message_handler(content_types=["any"], state=Geoposition.position)
+@admin_check(ADMINS_IDS)
+async def location(message: types.Message, state: FSMContext, **kwargs):
+    if message.location is not None:
+        gps_latitude = str(message.location.latitude)
+        gps_longitude = str(message.location.longitude)
+        await message.answer(f"{gps_latitude} {gps_longitude}")
+        await state.finish()
+    else:
+        await state.finish()
+        await send_help(message)
 
 
 @dp.message_handler()
