@@ -1,4 +1,4 @@
-api_token: 0
+api_token: 1
+api_openweather: 2
 admins_ids:
-  - stastodd: 1
-  - some_user: 2
+  - stastodd: 3
