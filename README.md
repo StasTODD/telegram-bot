@@ -5,21 +5,23 @@ It's private little project for help me in my life. It's not serious, but i try 
 ### It can do:
 ✔️ Get info about API token and admins id from yaml-file. 
 
-✔️ Send message to admin if tbot was started.
+✔️ Send message to admin(s) if telegram bot was started.
 
-✔️ Admin ID checker in decorator. It splitting clients privileges.
+✔️ Admin(s) ID checker in decorator. It splitting clients privileges.
 
-✔️ Work with Privatbank API for check USD/UAH course.
+✔️ Work with [Privatbank](https://privatbank.ua/) API for check USD/UAH course.
 
-✔️ Work with Exmo cryptoexchange API for check BTC/USD course.
+✔️ Work with [Exmo](https://exmo.com/) cryptoexchange API for check BTC/USD course.
 
 ✔️ Privatbank and Exmo have reply-format in the image.
+
+✔️ Work with [openweathermap](https://openweathermap.org/) API for weather check.
+
+✔️ Send geoposition in chat - get coordinates in text format.
 ### In the future, will be support this functions:
-❔ Work with Raspberry PI.
+❔ Work with [Raspberry PI](https://www.raspberrypi.org/) soft/device modules.
 
-❔ Listen commands for work with digital camera.
-
-❔ Work with weather site API for weather check.
+❔ Listen commands for work with Raspberry PI digital camera.
 
 ❔ Work with dashboard creater for summary all info.
 
@@ -27,4 +29,4 @@ It's private little project for help me in my life. It's not serious, but i try 
 
 ❔ Migrate hello-message from strings to buttons.
 
-❔ Migrate static to dynamic image in reply-message.
+❔ Migrate static to dynamic image in reply-messages.
