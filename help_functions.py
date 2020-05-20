@@ -1,6 +1,7 @@
 import yaml
 import aiohttp
 from typing import List, Dict, Union, Any
+from pathlib import Path
 
 
 def get_data_from_yaml(filename: str) -> dict:
@@ -32,6 +33,16 @@ async def get_json_from_web(url: str) -> Dict[str, Union[str, object]]:
             result = {"status": resp.status, "result": await resp.text()}
             return result
 
+
+def create_dir(dir_path: str):
+    """
+    Create dir
+    :param dir_path: 'images/background_template'
+    """
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
+
+
 __all__ = ["get_data_from_yaml",
            "admin_check",
-           "get_json_from_web"]
+           "get_json_from_web",
+           "create_dir"]

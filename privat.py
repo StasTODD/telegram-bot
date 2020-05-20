@@ -2,7 +2,7 @@ import asyncio
 import ast
 from typing import List, Dict, Union, Any
 from PIL import Image, ImageDraw, ImageFont
-from help_functions import get_json_from_web
+from help_functions import get_json_from_web, create_dir
 
 
 # Privatbank API (JSON format)
@@ -82,7 +82,11 @@ async def create_privat_image(displayed_text: str) -> str:
     :param displayed_text: str
     :return: "images/out/usd.png"
     """
-    image_template_path = "images/background_template/usd.png"
+    template_directory = "images/background_template"
+    result_directory = "images/out"
+    image_name = "usd.png"
+    image_template_path = f"{template_directory}/{image_name}"
+    image_result_path = f"{result_directory}/{image_name}"
     image_template = Image.open(image_template_path)
     draw = ImageDraw.Draw(image_template)
 
@@ -95,8 +99,11 @@ async def create_privat_image(displayed_text: str) -> str:
     text_color = "rgb(0, 0, 0)"
 
     draw.text((x, y), displayed_text, fill=text_color, font=font)
-    image_result_path = "images/out/usd.png"
-    image_template.save(image_result_path)
+    try:
+        image_template.save(image_result_path)
+    except FileNotFoundError:
+        create_dir(result_directory)
+        image_template.save(image_result_path)
 
     return image_result_path
 
