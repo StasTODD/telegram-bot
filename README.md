@@ -23,6 +23,8 @@ It's private little project for help me in my life. It's not serious, but i try 
 
 ❔ Listen commands for work with Raspberry PI digital camera.
 
+❔ Technical menu with many different functions.
+
 ❔ Work with dashboard creater for summary all info.
 
 ❔ Work with SQLite DB for save data.
