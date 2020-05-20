@@ -4,6 +4,13 @@ from typing import List, Dict, Union
 from PIL import Image, ImageDraw, ImageFont
 
 
+# EXMO exchange API (JSON format)
+url_exmo = "https://api.exmo.com/v1.1/ticker"
+cripto_pair = ["BTC_USD", "ETH_USD", "XRP_USD", "EOS_USD",
+               "ETC_USD", "LTC_USD", "NEO_USD", "SMART_USD",
+               "XEM_USD", "XLM_USD", "XMR_USD"]
+
+
 async def parse_exmo_jsons(raw_data: Dict[str, Union[int, str]], cripto_pair: List[str]) -> Union[Dict[str, str], bool]:
     """
     :param cripto_pair: ['BTC_USD', 'ETH_USD', 'XRP_USD' ... ]
@@ -94,6 +101,8 @@ async def create_cryptocurrency_image(displayed_text: str) -> str:
 
     return image_result_path
 
-__all__ = ["parse_exmo_jsons",
+__all__ = ["url_exmo",
+           "cripto_pair",
+           "parse_exmo_jsons",
            "create_cryptocurrency_message",
            "create_cryptocurrency_image"]

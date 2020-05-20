@@ -5,6 +5,12 @@ from PIL import Image, ImageDraw, ImageFont
 from help_functions import get_json_from_web
 
 
+# Privatbank API (JSON format)
+url_privatbank_private = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
+url_privatbank_busines = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
+url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
+
+
 async def get_jsons_privat(url_list: List[str]) -> list:
     coroutines = map(get_json_from_web, url_list)
     return await asyncio.gather(*coroutines)
@@ -94,7 +100,8 @@ async def create_privat_image(displayed_text: str) -> str:
 
     return image_result_path
 
-__all__ = ["get_jsons_privat",
+__all__ = ["url_privatbank_list",
+           "get_jsons_privat",
            "parse_privat_jsons",
            "create_privat_currency_message",
            "create_privat_image"]

@@ -4,7 +4,6 @@ import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from states import StatesWeather, Geoposition
 from buttons import gps_keyboard
 
 # Don't panic about '*', many imports is here but method __all__ on guard :)
@@ -12,6 +11,7 @@ from help_functions import *
 from privat import *
 from exmo import *
 from weather import *
+from states import *
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -31,21 +31,10 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop, storage=storage)
-# dp = Dispatcher(bot)
 
 # Display output information in image (image - True, text - False):
 image_output = True
 
-# Privatbank API (JSON format)
-url_privatbank_private = "https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5"
-url_privatbank_busines = "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11"
-url_privatbank_list = [url_privatbank_private, url_privatbank_busines]
-
-# EXMO exchange API (JSON format)
-url_exmo = "https://api.exmo.com/v1.1/ticker"
-cripto_pair = ["BTC_USD", "ETH_USD", "XRP_USD", "EOS_USD",
-               "ETC_USD", "LTC_USD", "NEO_USD", "SMART_USD",
-               "XEM_USD", "XLM_USD", "XMR_USD"]
 
 start_string = "/start - initialization message\n\n"\
                "/privat - exchange rates\n\n"\
