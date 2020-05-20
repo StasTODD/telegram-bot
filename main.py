@@ -152,7 +152,7 @@ async def location(message: types.Message, state: FSMContext, **kwargs):
     if message.location is not None:
         gps_latitude = str(message.location.latitude)
         gps_longitude = str(message.location.longitude)
-        await message.answer(f"{gps_latitude} {gps_longitude}")
+        await message.answer(f"<code>{gps_latitude} {gps_longitude}</code>", parse_mode="html")
         await state.finish()
     else:
         await state.finish()
