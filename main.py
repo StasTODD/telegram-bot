@@ -13,6 +13,7 @@ from privat import *
 from exmo import *
 from weather import *
 from states import *
+from info_about import *
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -166,8 +167,17 @@ async def location(message: types.Message, state: FSMContext, **kwargs):
 async def technical_actions(message: types.Message, **kwargs):
     await BotTechnical.query.set()
     await bot.send_message(message.chat.id, "Set the action\n"
+                                            "/info - information about bot\n\n"
                                             "/stop_bot - stop bot process\n\n"
                                             "/future - other future actions")
+
+
+@dp.message_handler(commands=["info"], state=BotTechnical.query)
+@admin_check(ADMINS_IDS)
+async def data_platform(message: types.Message, state: FSMContext, **kwargs):
+    await state.finish()
+    info_message = await all_messages_text()
+    await bot.send_message(message.chat.id, info_message)
 
 
 @dp.message_handler(commands=["stop_bot"], state=BotTechnical.query)
