@@ -1,5 +1,4 @@
 from help_functions import get_json_from_web
-import ast
 
 
 async def get_public_ip() -> str:
@@ -7,8 +6,7 @@ async def get_public_ip() -> str:
     It's not universal function for work with sites who response me with data of my public IP address
     :return: 'ip address'
     """
-    # TODO: Using try/except its not good idea, need something better:
-    url_ip_0 = "https://api.ipify.org?format=json"
+    url_ip_0 = "https://api.ipify.org/"
     url_ip_1 = "https://ident.me/"
 
     requests_list = [await get_json_from_web(url) for url in [url_ip_0, url_ip_1]]
@@ -17,12 +15,7 @@ async def get_public_ip() -> str:
     for one_request in requests_list:
         if one_request.get("status") == 200:
             request_result = one_request.get("result")
-            try:
-                request_result = ast.literal_eval(request_result)
-                request_result = request_result.get("ip")
-                results_data_list.append(request_result)
-            except SyntaxError:
-                results_data_list.append(request_result)
+            results_data_list.append(request_result)
 
     if len(set(results_data_list)) == 1:
         return str(results_data_list[0])
