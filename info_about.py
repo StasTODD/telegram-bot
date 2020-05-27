@@ -1,5 +1,4 @@
 import platform
-import distro
 from help_functions import get_json_from_web
 
 
@@ -32,8 +31,9 @@ async def get_software_info() -> str:
               python: info'
     """
     python_version = platform.python_version()
-    os_version = distro.info()
-    os_data = f"{os_version.get('id')} {os_version.get('version')}"
+    os_version = platform.system()
+    os_release = platform.release()
+    os_data = f"{os_version} {os_release}"
     software_info = f"os: {os_data}\n" \
                     f"python: {python_version}"
 
