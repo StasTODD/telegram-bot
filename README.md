@@ -18,12 +18,12 @@ It's private little project for help me in my life. It's not serious, but i try 
 ✔️ Work with [openweathermap](https://openweathermap.org/) API for weather check.
 
 ✔️ Send geoposition in chat - get coordinates in text format.
+
+✔️ Send software/hardware platform info where it was started. 
 ### In the future, will be support this functions:
 ❔ Work with [Raspberry PI](https://www.raspberrypi.org/) soft/device modules.
 
 ❔ Listen commands for work with Raspberry PI digital camera.
-
-❔ Work with dashboard creater for summary all info.
 
 ❔ Work with SQLite DB for save data.
 

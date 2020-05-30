@@ -9,5 +9,11 @@ class StatesWeather(StatesGroup):
 class Geoposition(StatesGroup):
     position = State()
 
+
+class BotTechnical(StatesGroup):
+    query = State()
+    confirm_query = State()
+
 __all__ = ["StatesWeather",
-           "Geoposition"]
+           "Geoposition",
+           "BotTechnical"]

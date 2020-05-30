@@ -4,6 +4,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from sys import exit
 from buttons import gps_keyboard
 
 # Don't panic about '*', many imports is here but method __all__ on guard :)
@@ -12,6 +13,7 @@ from privat import *
 from exmo import *
 from weather import *
 from states import *
+from info_about import *
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -40,7 +42,8 @@ start_string = "/start - initialization message\n\n"\
                "/privat - exchange rates\n\n"\
                "/exmo - crypto exchange rates\n\n"\
                "/weather - weather data\n\n"\
-               "/geoposition - take GPS location"\
+               "/geoposition - take GPS location\n\n" \
+               "/bot - technical commands"
 
 
 @dp.message_handler(commands=["start"])
@@ -157,6 +160,58 @@ async def location(message: types.Message, state: FSMContext, **kwargs):
     else:
         await state.finish()
         await send_help(message)
+
+
+@dp.message_handler(commands=["bot"], state=None)
+@admin_check(ADMINS_IDS)
+async def technical_actions(message: types.Message, **kwargs):
+    await BotTechnical.query.set()
+    await bot.send_message(message.chat.id, "Set the action\n"
+                                            "/info - information about bot\n\n"
+                                            "/stop_bot - stop bot process\n\n"
+                                            "/future - other future actions")
+
+
+@dp.message_handler(commands=["info"], state=BotTechnical.query)
+@admin_check(ADMINS_IDS)
+async def data_platform(message: types.Message, state: FSMContext, **kwargs):
+    await state.finish()
+    info_message = await all_messages_text()
+    await bot.send_message(message.chat.id, info_message, parse_mode="html")
+
+
+@dp.message_handler(commands=["stop_bot"], state=BotTechnical.query)
+@admin_check(ADMINS_IDS)
+async def stop_bot_question(message: types.Message, state: FSMContext, **kwargs):
+    await BotTechnical.confirm_query.set()
+    await bot.send_message(message.chat.id, "You really sure?\n"
+                                            "/stop_bot - stop bot process\n\n"
+                                            "/back - back to previous menu")
+
+
+@dp.message_handler(commands=["stop_bot"], state=BotTechnical.confirm_query)
+@admin_check(ADMINS_IDS)
+async def stop_bot_action(message: types.Message, state: FSMContext, **kwargs):
+    await bot.send_message(message.chat.id, "⛔⛔⛔\n"
+                                            "At this moment, python telegram bot stopping with sys.exit()\n"
+                                            "⛔⛔⛔")
+    exit()
+
+
+@dp.message_handler(commands=["back"], state=BotTechnical.confirm_query)
+@admin_check(ADMINS_IDS)
+async def back_to_technical_actions(message: types.Message, state: FSMContext, **kwargs):
+    await state.finish()
+    await technical_actions(message)
+
+
+@dp.message_handler(commands=["future"], state=BotTechnical.query)
+@admin_check(ADMINS_IDS)
+async def future_command(message: types.Message, state: FSMContext, **kwargs):
+    await state.finish()
+    await bot.send_message(message.chat.id, "About future functions, see:\n"
+                                            "https://github.com/StasTODD/telegram-bot")
+    await bot.send_message(message.chat.id, start_string)
 
 
 @dp.message_handler()
