@@ -40,10 +40,17 @@ async def get_software_info() -> str:
     return software_info
 
 
-async def get_hardware_info():
-    hardware_info = ""
-    # TODO: need write logic
-    return hardware_info
+async def get_hardware_info() -> str:
+    """
+    Get and return cpu architecture information
+    :return: 'cpu: armv7l'
+    """
+    hardware_info = platform.uname()
+    machine = hardware_info.machine
+    if len(machine):
+        return f"cpu: {str(machine)}"
+    else:
+        return ""
 
 
 async def all_messages_text() -> str:
@@ -55,13 +62,14 @@ async def all_messages_text() -> str:
     software_info = await get_software_info()
     hardware_info = await get_hardware_info()
 
-    message_text = ""
+    message_text = "<code>"
     if public_ip:
         message_text += f"work from IP: {public_ip}\n"
     if software_info:
         message_text += f"{software_info}\n"
     if hardware_info:
         message_text += f"{hardware_info}\n"
+    message_text += "</code>"
     if not message_text:
         message_text = "Haven't information"
 

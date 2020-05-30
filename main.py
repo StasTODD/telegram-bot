@@ -177,7 +177,7 @@ async def technical_actions(message: types.Message, **kwargs):
 async def data_platform(message: types.Message, state: FSMContext, **kwargs):
     await state.finish()
     info_message = await all_messages_text()
-    await bot.send_message(message.chat.id, info_message)
+    await bot.send_message(message.chat.id, info_message, parse_mode="html")
 
 
 @dp.message_handler(commands=["stop_bot"], state=BotTechnical.query)
@@ -211,7 +211,7 @@ async def future_command(message: types.Message, state: FSMContext, **kwargs):
     await state.finish()
     await bot.send_message(message.chat.id, "About future functions, see:\n"
                                             "https://github.com/StasTODD/telegram-bot")
-    await send_welcome(message)
+    await bot.send_message(message.chat.id, start_string)
 
 
 @dp.message_handler()
