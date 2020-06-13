@@ -55,6 +55,97 @@ async def get_weather_data(weather_api: str, location: Location, state: str = "w
         return f"Error. Get status message - {data['status']}"
 
 
+def set_weather_emoji(description, set_date):
+    """
+    Use emoji from: https://emojiterra.com/sky-weather/
+
+    :return: description of weather with emoji
+    """
+    # TODO: define time and set corresponding emoji
+    if description == "clear sky":
+        return f"{description} ☀️"
+    elif description == "few clouds":
+        return f"{description} ⛅"
+    elif description == "scattered clouds":
+        return f"{description} ☁"
+    elif description == "broken clouds":
+        return f"{description} ☁☁"
+    elif description == "overcast clouds":
+        return f"{description} ☁☁☁"
+
+    elif description in ["light intensity shower rain",
+                         "light intensity drizzle",
+                         "drizzle",
+                         "light intensity drizzle rain",
+                         "drizzle rain",
+                         "light rain"]:
+        return f"{description} 🌧|🌦️️"
+    elif description in ["shower rain",
+                         "ragged shower rain",
+                         "heavy intensity drizzle",
+                         "heavy intensity drizzle rain",
+                         "shower rain and drizzle",
+                         "shower drizzle",
+                         "moderate rain",
+                         "light rain",
+                         "moderate rain",
+                         "rain"]:
+        return f"{description} 🌧🌦"
+    elif description in ["heavy intensity shower rain",
+                         "heavy shower rain and drizzle",
+                         "heavy intensity rain",
+                         "very heavy rain",
+                         "extreme rain"]:
+        return f"{description} 🌧️🌧🌧"
+
+    elif description in ["light thunderstorm"]:
+        return f"{description} 🌩️"
+    elif description in ["thunderstorm", "ragged thunderstorm"]:
+        return f"{description} 🌩🌩️"
+    elif description in ["heavy thunderstorm"]:
+        return f"{description} 🌩️🌩🌩"
+
+    elif description in ["thunderstorm with light rain",
+                         "thunderstorm with light drizzle",
+                         "thunderstorm with drizzle"]:
+        return f"{description} ⛈️"
+    elif description in ["thunderstorm with rain",
+                         "thunderstorm with heavy drizzle"]:
+        return f"{description} ⛈⛈️"
+    elif description in ["thunderstorm with heavy rain"]:
+        return f"{description} ⛈️⛈⛈"
+
+    elif description in ["light snow", "Light shower snow"]:
+        return f"{description} 🌨️"
+    elif description in ["Snow", "Shower snow"]:
+        return f"{description} 🌨️🌨"
+    elif description in ["Heavy snow", "Heavy shower snow"]:
+        return f"{description} 🌨️🌨🌨"
+
+    elif description in ["Sleet",
+                         "Light shower sleet",
+                         "Shower sleet",
+                         "Light rain and snow",
+                         "Rain and snow"]:
+        return f"{description} ❄️💧"
+
+    elif description in ["mist",
+                         "Smoke",
+                         "Haze",
+                         "fog"]:
+        return f"{description} 🌫️"
+
+    elif description in ["sand",
+                         "dust",
+                         "volcanic ash",
+                         "squalls",
+                         "tornado"]:
+        return f"{description} 🌬️"
+
+    else:
+        return description
+
+
 async def parse_weather_api_request(weather_msg: dict) -> str:
     """
     Parse weather API request message.
@@ -110,6 +201,8 @@ async def parse_weather_api_request(weather_msg: dict) -> str:
         temp_str = temp_min + "°"
     else:
         temp_str = f"{temp_min}°-{temp_max}°"
+
+    description = set_weather_emoji(description, set_date)
 
     result_str = f"At {date_str}\n\n"\
                  f"state: {description}\n"\
