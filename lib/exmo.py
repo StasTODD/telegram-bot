@@ -2,7 +2,7 @@ import ast
 import statistics
 from typing import List, Dict, Union
 from PIL import Image, ImageDraw, ImageFont
-from help_functions import create_dir
+from .help_functions import create_dir
 
 
 # EXMO exchange API (JSON format)
@@ -58,7 +58,7 @@ async def create_cryptocurrency_message(currency: Union[Dict[str, str], bool], t
     """
     Create string with crypto currency data
 
-    :param text_for_image: Display output information in image (image - True, text - False)
+    :param text_for_image: Display output information in images (images - True, text - False)
     :param currency: {'BTC_USD': '7580.34561', 'ETH_USD': '189.682', ... }
     :return: 'str'
     """
@@ -79,7 +79,7 @@ async def create_cryptocurrency_message(currency: Union[Dict[str, str], bool], t
 
 async def create_cryptocurrency_image(displayed_text: str) -> str:
     """
-    Create image with text and return path to image
+    Create images with text and return path to images
 
     :param displayed_text: str
     :return: "images/out/crypto.png"
@@ -95,7 +95,7 @@ async def create_cryptocurrency_image(displayed_text: str) -> str:
     font_size = 50
     font = ImageFont.truetype("images/fonts/Spartan/static/Spartan-SemiBold.ttf", size=font_size)
 
-    # Start position on image:
+    # Start position on images:
     (x, y) = (140, 90)
 
     text_color = "rgb(255, 255, 255)"

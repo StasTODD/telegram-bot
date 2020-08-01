@@ -1,7 +1,7 @@
 import ast
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Union, Any
-from help_functions import get_json_from_web
+from .help_functions import get_json_from_web
 from aiogram.types import Location
 
 

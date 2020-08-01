@@ -1,5 +1,5 @@
 import platform
-from help_functions import get_json_from_web
+from .help_functions import get_json_from_web
 
 
 async def get_public_ip() -> str:

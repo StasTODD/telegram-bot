@@ -5,15 +5,15 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from sys import exit
-from buttons import gps_keyboard
 
 # Don't panic about '*', many imports is here but method __all__ on guard :)
-from help_functions import *
-from privat import *
-from exmo import *
-from weather import *
-from states import *
-from info_about import *
+from lib.help_functions import *
+from lib.buttons import gps_keyboard
+from lib.privat import *
+from lib.exmo import *
+from lib.weather import *
+from lib.states import *
+from lib.info_about import *
 
 # Create loop
 loop = asyncio.get_event_loop()
@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop, storage=storage)
 
-# Display output information in image (image - True, text - False):
+# Display output information in images (images - True, text - False):
 image_output = True
 
 
@@ -220,5 +220,5 @@ async def send_help(message: types.Message):
 
 
 if __name__ == "__main__":
-    from hendlers import send_to_admin
+    from lib.hendlers import send_to_admin
     executor.start_polling(dp, on_startup=send_to_admin)

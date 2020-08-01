@@ -2,7 +2,7 @@ import asyncio
 import ast
 from typing import List, Dict, Union, Any
 from PIL import Image, ImageDraw, ImageFont
-from help_functions import get_json_from_web, create_dir
+from .help_functions import get_json_from_web, create_dir
 
 
 # Privatbank API (JSON format)
@@ -77,7 +77,7 @@ async def create_privat_currency_message(currency: List[Dict[str, str]], text_fo
 
 async def create_privat_image(displayed_text: str) -> str:
     """
-    Create image with text and return path to image
+    Create images with text and return path to images
 
     :param displayed_text: str
     :return: "images/out/usd.png"
@@ -93,7 +93,7 @@ async def create_privat_image(displayed_text: str) -> str:
     font_size = 60
     font = ImageFont.truetype("images/fonts/Spartan/static/Spartan-SemiBold.ttf", size=font_size)
 
-    # Start position on image:
+    # Start position on images:
     (x, y) = (190, 100)
 
     text_color = "rgb(0, 0, 0)"
