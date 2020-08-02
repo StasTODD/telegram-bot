@@ -1,8 +1,11 @@
-<h1 align="center">StasTODD telegram bot </h1>
+<h1 align="center">Telegram bot </h1>
 
-It's private little project for help me in my life. It's not serious, but i try practice python language and async methods. 
+Private Telegram bot with little functional. General idea it's telegram-interface for work with different program and RaspberryPI hardware modules. Bot was wrote use python-async methods and this approach do program faster where run I/O operations.
 
-### It can do:
+It's private little project for helping me in my life. If become new necessaryes, the bot will be supplemented with new functionality. 
+
+## Functional:
+
 ✔️ Get info about API token and admins id from yaml-file. 
 
 ✔️ Send message to admin(s) if telegram bot was started.
@@ -20,13 +23,40 @@ It's private little project for help me in my life. It's not serious, but i try 
 ✔️ Send geoposition in chat - get coordinates in text format.
 
 ✔️ Send software/hardware platform info where it was started. 
-### In the future, will be support this functions:
-❔ Work with [Raspberry PI](https://www.raspberrypi.org/) soft/device modules.
 
-❔ Listen commands for work with Raspberry PI digital camera.
+✔️ Bot-command for stop Telegram bot process.
+
+### Starting message has view:
+
+![](images/README/start.jpg)
+
+Detail of [bot-functional and examples](README/bot_general_overview.md) of run commands result.
+
+### In the future, will be support this functions:
+❔ Work with RaspberryPI hardware modules.
 
 ❔ Work with SQLite DB for save data.
 
-❔ Migrate hello-message from strings to buttons.
+## Installing procedure:
 
-❔ Migrate static to dynamic image in reply-messages.
+- Clone or download project from github.
+- Install python version 3.7+.
+- Create and activate special venv for project:
+
+`username@linux:~$ python3.7 -m venv venv_telegram_bot`
+
+`username@linux:~$ source venv_telegram_bot/bin/activate`
+
+- Upgrade `setuptools` and `wheel` libs:
+
+`(venv_telegram_bot) username@linux:~$ pip install --upgrade pip setuptools wheel`
+
+- Install necessary packages from `requirements.txt`:
+
+`(venv_telegram_bot) username@linux:~$ pip install -r proj/requirements.txt` 
+
+- Start Bot:
+
+`(venv_telegram_bot) username@linux:~$ python main.py`
+
+NOTE: main.py:1 should most likely be edited to fit your paths
