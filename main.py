@@ -1,4 +1,5 @@
-#!/home/stastodd/projects/venv_38_telegram-bot/bin/python3.8
+#!/home/stastodd/projects/telegram-bot/venv/bin/python3.8
+
 import logging
 import asyncio
 from aiogram import Bot, Dispatcher, executor, types
