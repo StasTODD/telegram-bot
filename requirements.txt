@@ -1,7 +1,7 @@
 aiodns==2.0.0
 aiofiles==0.6.0
 aiogram==2.11.2
-aiohttp==3.7.2
+aiohttp==3.7.4
 async-timeout==3.0.1
 attrs==20.3.0
 Babel==2.9.0
