@@ -39,10 +39,10 @@ dp = Dispatcher(bot, loop=loop, storage=storage)
 image_output = True
 
 
-start_string = "/start - initialization message\n\n"\
-               "/privat - exchange rates\n\n"\
-               "/exmo - crypto exchange rates\n\n"\
-               "/weather - weather data\n\n"\
+start_string = "/start - initialization message\n\n" \
+               "/privat - exchange rates\n\n" \
+               "/exmo - crypto exchange rates\n\n" \
+               "/weather - weather data\n\n" \
                "/geoposition - take GPS location\n\n" \
                "/bot - technical commands"
 
@@ -169,7 +169,7 @@ async def technical_actions(message: types.Message, **kwargs):
     await BotTechnical.query.set()
     await bot.send_message(message.chat.id, "Set the action\n"
                                             "/info - information about bot\n\n"
-                                            "/stop_bot - stop bot process\n\n"
+                                            "/stop_functionality - stop functionality\n\n"
                                             "/future - other future actions")
 
 
@@ -181,12 +181,13 @@ async def data_platform(message: types.Message, state: FSMContext, **kwargs):
     await bot.send_message(message.chat.id, info_message, parse_mode="html")
 
 
-@dp.message_handler(commands=["stop_bot"], state=BotTechnical.query)
+@dp.message_handler(commands=["stop_functionality"], state=BotTechnical.query)
 @admin_check(ADMINS_IDS)
 async def stop_bot_question(message: types.Message, state: FSMContext, **kwargs):
     await BotTechnical.confirm_query.set()
     await bot.send_message(message.chat.id, "You really sure?\n"
                                             "/stop_bot - stop bot process\n\n"
+                                            "/stop_camera - stop camera process\n\n"
                                             "/back - back to previous menu")
 
 
@@ -197,6 +198,30 @@ async def stop_bot_action(message: types.Message, state: FSMContext, **kwargs):
                                             "At this moment, python telegram bot stopping with sys.exit()\n"
                                             "⛔⛔⛔")
     exit()
+
+
+@dp.message_handler(commands=["stop_camera"], state=BotTechnical.confirm_query)
+@admin_check(ADMINS_IDS)
+async def stop_camera_action(message: types.Message, state: FSMContext, **kwargs):
+    await state.finish()
+    # attribute it is a keyword for find PID process in the system:
+    attribute = "rpi_pirsensor_camera_telegram"
+    pid = await find_pid(attribute)
+    # When PID is existed and correct:
+    if isinstance(pid, int) and pid != 0:
+        await bot.send_message(message.chat.id, f"⛔⛔⛔\n"
+                                                f"At this moment, camera's PID '{pid}' is stopping with 'kill -9'\n"
+                                                f"⛔⛔⛔")
+        kill_status = await kill_process(pid)
+        # When PID can't be killed:
+        if isinstance(kill_status, str):
+            await bot.send_message(message.chat.id, f"PID '{pid}' can't be killed, error:\n\n{kill_status}")
+    # When got error message:
+    elif isinstance(pid, str):
+        await bot.send_message(message.chat.id, f"PID not detected. Error was registered:\n\n{pid}")
+    # When PID not found:
+    else:
+        await bot.send_message(message.chat.id, "Camera's PID not found or not connected to the server")
 
 
 @dp.message_handler(commands=["back"], state=BotTechnical.confirm_query)
