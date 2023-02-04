@@ -14,6 +14,7 @@ class BotTechnical(StatesGroup):
     query = State()
     confirm_query = State()
 
+
 __all__ = ["StatesWeather",
            "Geoposition",
            "BotTechnical"]
