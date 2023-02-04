@@ -16,14 +16,15 @@ from lib.weather import *
 from lib.states import *
 from lib.info_about import *
 
+# Get configuration parameters from data.yaml:
+config_data = get_data_from_yaml("data.yaml")
+# API telegram token:
+API_TOKEN = config_data["api_telegram_token"]
+# List of admin users. Create admins_id structure: [int, int]
+ADMINS_IDS = [list(adm_id.values())[0] for adm_id in [adm_row for adm_row in config_data["admins_ids"]]]
+
 # Create loop
 loop = asyncio.get_event_loop()
-
-# Get api_token and admins_ids
-admin_data = get_data_from_yaml("data.yaml")
-API_TOKEN = admin_data["api_token"]
-# Create admins_id structure: [int, int]
-ADMINS_IDS = [list(adm_id.values())[0] for adm_id in [adm_row for adm_row in admin_data["admins_ids"]]]
 
 # Create storage for save message state
 storage = MemoryStorage()
@@ -35,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, loop=loop, storage=storage)
 
-# Display output information in images (images - True, text - False):
+# Display output information for privat and exmo services in images (images - True, text - False):
 image_output = True
 
 
@@ -128,7 +129,7 @@ async def query_weather(message: types.Message, state: FSMContext, **kwargs):
 @admin_check(ADMINS_IDS)
 async def location(message: types.Message, state: FSMContext, **kwargs):
     if message.location is not None:
-        weather_api = admin_data["api_openweather"]
+        weather_api = config_data["api_openweather"]
         weather_date = await state.get_data()
         weather_date = weather_date.get("weather_date")
         if weather_date in ["/today", "/tomorrow", "/plus_2_days", "/plus_3_days", "/plus_4_days"]:

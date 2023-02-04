@@ -1,4 +1,4 @@
-api_token: 1
+api_telegram_token: 1
 api_openweather: 2
 admins_ids:
   - stastodd: 3
