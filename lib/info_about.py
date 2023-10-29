@@ -1,4 +1,5 @@
 import platform
+import asyncio
 from .help_functions import get_json_from_web
 
 
@@ -53,6 +54,31 @@ async def get_hardware_info() -> str:
         return ""
 
 
+async def get_cpu_temperature():
+    """
+    Async function for getting CPU temperature.
+    :return: str() | Text with error 'ERROR: CPU temperature can not be obtained' or temperature value '41.8°C'
+    """
+    command = f"cat /sys/class/thermal/thermal_zone*/temp"
+    proc = await asyncio.create_subprocess_shell(command,
+                                                 stdout=asyncio.subprocess.PIPE,
+                                                 stderr=asyncio.subprocess.PIPE)
+    stdout, stderr = await proc.communicate()
+    error_msg = stderr.decode()  # ''
+    temperature = stdout.decode()  # '41868\n'
+    result = str()
+    if temperature:
+        try:
+            result = str(int(temperature)/1000)[:4]  # '41.8'
+        except ValueError as e:
+            return "ERROR: CPU temperature can not be decoded"
+    if error_msg:
+        return "ERROR: CPU temperature was obtained with error"
+    if not error_msg and not temperature:
+        return "ERROR: CPU temperature can not be obtained"
+    return f"{result}°C"
+
+
 async def all_messages_text() -> str:
     """
     Collecting different data about Telegram-bot platform/environment
@@ -61,14 +87,17 @@ async def all_messages_text() -> str:
     public_ip = await get_public_ip()
     software_info = await get_software_info()
     hardware_info = await get_hardware_info()
+    cpu_temperature = await get_cpu_temperature()
 
     message_text = "<code>"
     if public_ip:
-        message_text += f"work from IP: {public_ip}\n"
+        message_text += f"it works from IP: {public_ip}\n"
     if software_info:
         message_text += f"{software_info}\n"
     if hardware_info:
         message_text += f"{hardware_info}\n"
+    if cpu_temperature:
+        message_text += f"CPU temperature: {cpu_temperature}\n"
     message_text += "</code>"
     if not message_text:
         message_text = "Haven't information"
