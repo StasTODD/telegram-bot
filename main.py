@@ -1,4 +1,4 @@
-#!/home/stastodd/projects/telegram-bot/venv/bin/python3.8
+#!/home/stastodd/projects/telegram-bot/venv/bin/python
 
 import logging
 import asyncio
@@ -15,6 +15,7 @@ from lib.exmo import *
 from lib.weather import *
 from lib.states import *
 from lib.info_about import *
+from lib.moon_calendar import main as moon_calendar_creator
 
 # Get configuration parameters from data.yaml:
 config_data = get_data_from_yaml("data.yaml")
@@ -44,6 +45,7 @@ start_string = "/start - initialization message\n\n" \
                "/privat - exchange rates\n\n" \
                "/exmo - crypto exchange rates\n\n" \
                "/weather - weather data\n\n" \
+               "/moon_calendar - moon phases\n\n" \
                "/geoposition - take GPS location\n\n" \
                "/bot - technical commands"
 
@@ -123,6 +125,37 @@ async def query_weather(message: types.Message, state: FSMContext, **kwargs):
     await state.update_data({"weather_date": message.text})
     await StatesWeather.query.set()
     await bot.send_message(message.chat.id, "Push the button and send GPS position", reply_markup=gps_keyboard)
+
+
+@dp.message_handler(commands=["moon_calendar"], state=None)
+@admin_check(ADMINS_IDS)
+async def query_moon_calendar(message: types.Message, **kwargs):
+    await StatesMoonCalendar.question_of_date.set()
+    await bot.send_message(message.chat.id, "Set requested month:\n"
+                                            "/this_month\n\n"
+                                            "/next_month\n\n"
+                                            "custom date in format: YYYY-MM")
+
+
+@dp.message_handler(content_types=["any"], state=StatesMoonCalendar.question_of_date)
+@admin_check(ADMINS_IDS)
+async def query_moon_calendar(message: types.Message, state: FSMContext, **kwargs):
+    if image_output:
+        try:
+            image_path = await moon_calendar_creator(message.text)
+        except Exception as e:
+            await message.answer("Calendar not created. Something wrong... Possible fix:\n"
+                                 "sudo apt install poppler-utils")
+            await state.finish()
+            return
+        if image_path:
+            with open(image_path, "rb") as image:
+                await message.reply_photo(image.read())
+        else:
+            await message.answer("Image not created. Something wrong...")
+    else:
+        await message.answer("Moon data is not provided for the answer in text format")
+    await state.finish()
 
 
 @dp.message_handler(content_types=["any"], state=StatesWeather.query)

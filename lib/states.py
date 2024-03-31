@@ -6,6 +6,11 @@ class StatesWeather(StatesGroup):
     query = State()
 
 
+class StatesMoonCalendar(StatesGroup):
+    question_of_date = State()
+    query = State()
+
+
 class Geoposition(StatesGroup):
     position = State()
 
@@ -16,5 +21,6 @@ class BotTechnical(StatesGroup):
 
 
 __all__ = ["StatesWeather",
+           "StatesMoonCalendar",
            "Geoposition",
            "BotTechnical"]
